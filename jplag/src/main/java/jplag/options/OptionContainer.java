@@ -19,7 +19,7 @@ public class OptionContainer extends Options {
 	private String languageName = "java12";// Default
 	private boolean found1 = false;
 
-	public OptionContainer() {
+	public OptionContainer(Object o) { // TODO TS: I am not sure if this class is used somewhere. Does not seem like it.
 	}
 
 	public void setLanguage(String language) {
@@ -27,11 +27,11 @@ public class OptionContainer extends Options {
 	}
 
 	public void initializeSecondStep(Program program) throws jplag.ExitException {
-		for (int j = 0; j < languages.length - 1; j += 2)
-			if (languageName.equals(languages[j]))
+	    for (LanguageLiteral language : LanguageLiteral.values())
+            if (languageName.equals(language.getAbbreviation()))
 				try {
 					// Changed by Emeric Kwemou 13.01.05
-					Constructor<?>[] laguageConstructors = Class.forName(languages[j + 1]).getDeclaredConstructors();
+					Constructor<?>[] laguageConstructors = Class.forName(language.getAbbreviation()).getDeclaredConstructors();
 					Constructor<?> cons = laguageConstructors[0];
 					Object[] ob = { program };
 					// All Language have to have a program as Constructor Parameter

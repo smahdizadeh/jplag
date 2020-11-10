@@ -105,7 +105,7 @@ public class Program implements ProgramI {
 
     public Program(Options options) throws jplag.ExitException {
         this.options = options;
-        this.options.initializeSecondStep(this);
+        this.options.initializeSecondStep(this); // TODO TS: I don't like that this subroutine in options is called, options should be a pure data object
         if (this.options.language == null)
             throw new ExitException("Language not initialized!", ExitException.BAD_LANGUAGE_ERROR);
 

@@ -144,7 +144,7 @@ public class Report implements TokenConstants {
 	private int getMatchIndex(AllMatches match) {
 		Object obj = matchesIndexMap.get(match);
 		if (obj == null) {
-			matchesIndexMap.put(match, new Integer(curMatchIndex++));
+			matchesIndexMap.put(match, Integer.valueOf(curMatchIndex++));
 			return curMatchIndex - 1;
 		} else
 			return ((Integer) obj).intValue();

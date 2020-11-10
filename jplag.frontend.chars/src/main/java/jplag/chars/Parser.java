@@ -22,7 +22,7 @@ public class Parser extends jplag.Parser implements jplag.TokenConstants {
 			getProgram().print(null, "Parsing file " + files[i] + "\n");
 			if (!parseFile(dir, files[i]))
 				errors++;
-			struct.addToken(new CharToken(FILE_END, files[i], this));
+			struct.addToken(new CharToken(FILE_END, files[i]));
 		}
 		//System.err.println(struct.toString());
 		if (errors == 0)
@@ -48,8 +48,7 @@ public class Parser extends jplag.Parser implements jplag.TokenConstants {
 
 				for (int i = 0; i < length; i++) {
 					if (buffer[i] <= 127 && (type = mapping[buffer[i]]) > 1) {
-						struct.addToken(new CharToken(type, file, offset + i,
-								this));
+						struct.addToken(new CharToken(type, file, offset + i));
 					}
 					//System.out.print(buffer[i]);
 				}

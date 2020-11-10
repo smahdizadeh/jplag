@@ -5,16 +5,14 @@ public class CharToken extends jplag.Token {
 
 	private int index;
 
-	private Parser parser;
 
-	public CharToken(int type, String file, int index, Parser parser) {
+	public CharToken(int type, String file, int index) {
 		super(type, file, -1);
 		this.index = index;
-		this.parser = parser;
 	}
 
-	public CharToken(int type, String file, Parser parser) {
-		this(type, file, -1, parser);
+	public CharToken(int type, String file) {
+		this(type, file, -1);
 	}
 
 	public int getLine() {

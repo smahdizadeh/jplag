@@ -3,7 +3,6 @@
  */
 package jplag.options;
 
-import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.NoSuchElementException;
@@ -16,29 +15,21 @@ import jplag.Program;
 
 public class CommandLineOptions extends Options {
     private String[] args;
+    // use to detect a language in the initialisation
+    public boolean languageIsFound = false;
+    public String commandLine = "";
 
     public String[] getArgs() {
         return args;
     }
 
+    // TODO TS: cmdInString is not used at all, 
     public CommandLineOptions(String[] args) throws jplag.ExitException {
-        this(args, null);
-    }
-
-    public CommandLineOptions(String[] args, String cmdInString) throws jplag.ExitException {
         this.args = args;
-
         initialize(args);
-
-        // @Changed by Moritz Kroll 26.02.2005
-        // set to default language if not specified
-        // changed by Emeric 22-03-05 commandLine set to be compatible with
-        // the web service requirements
-
-        if (languageName == null)
+        if (languageName == null) {
             languageName = LanguageLiteral.getDefault().getAbbreviation();
-        if (cmdInString != null)
-            commandLine = cmdInString;
+        }
     }
 
     private void initialize(String[] args) throws jplag.ExitException {
@@ -60,11 +51,11 @@ public class CommandLineOptions extends Options {
                 this.commandLine += args[i] + " ";
         }
 
-        System.gc();
+        System.gc(); // TODO TS: Is this really required? I cannot really imagine that.
     }
 
     private boolean scanOption(String arg) throws jplag.ExitException {
-        if (arg.equals("-s")) {
+        if (arg.equals("-s")) { // TODO TS: something is weird/broken with -S, not sure ow it affects -s though
             this.read_subdirs = true;
         } else if (arg.equals("-external")) { // hidden option!
             System.out.println("External search activated!");
@@ -342,33 +333,6 @@ public class CommandLineOptions extends Options {
         if (!suffixes_set)
             this.suffixes = this.language.suffixes();
         checkBasecodeOption();
-    }
-
-    /**
-     * This method checks whether the basecode directory value is valid
-     */
-    private void checkBasecodeOption() throws jplag.ExitException {
-        if (useBasecode) {
-            if (basecode == null || basecode.equals("")) {
-                throw new ExitException("Basecode option used but none " + "specified!", ExitException.BAD_PARAMETER);
-            }
-            String baseC = root_dir + File.separator + basecode;
-            if (!(new File(root_dir)).exists()) {
-                throw new ExitException("Root directory \"" + root_dir + "\" doesn't exist!", ExitException.BAD_PARAMETER);
-            }
-            File f = new File(baseC);
-            if (!f.exists()) {	// Basecode dir doesn't exist.
-                throw new ExitException("Basecode directory \"" + baseC + "\" doesn't exist!", ExitException.BAD_PARAMETER);
-            }
-            if (sub_dir != null && sub_dir.length() != 0) {
-                f = new File(baseC, sub_dir);
-                if (!f.exists()) {
-                    throw new ExitException("Basecode directory doesn't contain" + " the subdirectory \"" + sub_dir + "\"!",
-                            ExitException.BAD_PARAMETER);
-                }
-            }
-            System.out.println("Basecode directory \"" + baseC + "\" will be used");
-        }
     }
 
 }

@@ -779,10 +779,6 @@ public class Program implements ProgramI {
         return this.options.clusterType;
     }
 
-    public String get_commandLine() {
-        return this.options.commandLine;
-    }
-
     public String getCountryTag() {
         return options.getCountryTag();
     }

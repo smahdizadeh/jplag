@@ -3,6 +3,8 @@ package jplag.options;
 import java.util.ArrayList;
 import java.util.List;
 
+import jplag.Language;
+
 /**
  * Language literals that encapsulate the available languages with their abbreviations and the correlating language
  * class names. Intended to help with the reflective creation of language objects.
@@ -28,12 +30,12 @@ public enum LanguageLiteral { // TODO TS: better name?
     private String languageClass;
 
     private LanguageLiteral(String abbreviation, String languageClass) {
-        this.abbreviation = abbreviation;
+        this.abbreviation = abbreviation; // TODO TS: This is a relic of the previous implementation and just the short name from {@link Language#getShortName()}.
         this.languageClass = languageClass;
     }
 
     /**
-     * Returns the abbreviation of the language, as used with the language parameter in the CLI.
+     * Returns the abbreviation of the language, as used with the language parameter in the CLI. This matches {@link Language#getShortName()}.
      * @return the abbreviation such as <code>"java19"</code> or <code>"c/c++"</code>.
      */
     public String getAbbreviation() {

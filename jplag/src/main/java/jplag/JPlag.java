@@ -8,7 +8,7 @@ public class JPlag {
             CommandLineOptions.usage();
         else {
             try {
-                CommandLineOptions options = new CommandLineOptions(args, null);
+                CommandLineOptions options = new CommandLineOptions(args);
                 Program program = new Program(options);
                 System.out.println("initialize ok");
                 program.run();

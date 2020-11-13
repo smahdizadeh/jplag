@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -1252,7 +1251,8 @@ public class Program implements ProgramI {
     }
 
     /**
-     * Loads the language from the language name if not set. This is the case for command line options. This was previously part of the options (second step)
+     * Loads the language from the language name if not set. This is the case for command line options. This was previously
+     * part of the options (second step)
      * @throws jplag.ExitException if there is no class to be found for the language literal set in the options.
      */
     private void ensureLanguageIsLoaded() throws jplag.ExitException {
@@ -1262,11 +1262,9 @@ public class Program implements ProgramI {
                     try {
                         Constructor<?> languageConstructor = Class.forName(language.getClassName()).getConstructor(ProgramI.class);
                         options.setLanguage((Language) languageConstructor.newInstance(this));
-                    } catch (NoSuchMethodException | ClassNotFoundException | InstantiationException | IllegalAccessException
-                            | InvocationTargetException exception) {
+                    } catch (ReflectiveOperationException exception) {
                         exception.printStackTrace();
-                        throw new jplag.ExitException(
-                                "Illegal value: Language instantiation failed: Unknown language \"" + options.languageName + "\"",
+                        throw new jplag.ExitException("Language instantiation failed: Unknown language \"" + options.languageName + "\"",
                                 +ExitException.BAD_LANGUAGE_ERROR);
                     }
                 }

@@ -6,7 +6,6 @@
 package jplag.options;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -195,33 +194,26 @@ public abstract class Options {
                 + " -l <language>   (Language) Supported Languages:\n                 ");
         System.out.println(LanguageLiteral.availableLanguages());
     }
-    
-    public static void main(String[] args) {
-        try {
-            printAllLanguages();
-        } catch (ExitException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
 
-    // TODO TS: This is called by hidden option, but was deeply broken. Now it is fixed but I have no clue why this is needed
-    protected static void printAllLanguages() throws jplag.ExitException {
+    /**
+     * Prints detailed information on all available languages. Does also give information on instantiation problems.
+     */
+    protected static void printAllLanguages() throws ExitException{
         for (LanguageLiteral language : LanguageLiteral.values()) {
-            try {   
+            try {
                 Language langClass = (Language) Class.forName(language.getClassName()).getConstructor(ProgramI.class).newInstance(new Program());
                 System.out.println(language.getAbbreviation());
                 String suffixes[] = langClass.suffixes();
-                for (int j = 0; j < suffixes.length; j++)
-                    System.out.print(suffixes[j] + (j + 1 < suffixes.length ? "," : "\n"));
-                System.out.println(langClass.min_token_match());
-            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException
-                    | InstantiationException | ClassNotFoundException e) {
-                // no handling, as this method already implies that an error occurred and an ExitException will be thrown
-                System.err.println("catch " + language + " " + e.getMessage());
+                System.out.print(" Suffixes: ");
+                for (int j = 0; j < suffixes.length; j++) {
+                    System.out.print(suffixes[j] + (j + 1 < suffixes.length ? ", " : "\n"));
+                }
+                System.out.println(" Min token match: " + langClass.min_token_match());
+            } catch (ReflectiveOperationException | IllegalArgumentException | SecurityException exception) {
+                System.err.println("Could not find " + language + " " + exception.getMessage());
             }
         }
-        throw new ExitException("printAllLanguages exited");
+        System.exit(0);
     }
 
     public String getClusterTyp() {

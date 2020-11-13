@@ -245,36 +245,8 @@ public class Clusters {
 	/* Dendrograms... */
 	public int makeDendrograms(File root, Cluster clustering)
 				throws jplag.ExitException {
-		HTMLFile f = this.program.report.openHTMLFile(root, "dendro.html");
-		f.println("<!DOCTYPE HTML PUBLIC \"-//DTD HTML 3.2//EN\">");
-		f.println("<HTML>\n<HEAD>\n<TITLE>"
-			+ msg.getString("Clusters.Dendrogram") + "</TITLE>\n"
-			+ "<script language=\"JavaScript\" type=\"text/javascript\" "
-			+ "src=\"fields.js\">\n</script>\n</HEAD>\n<BODY>");
-		f.println("<H1>" + msg.getString("Clusters.Dendrogram") + "</H1>");
-		
-		f.println("<form name=\"data\" action=\"\">");
-		f.println("<table border=\"0\">");
-		f.println("<tr><td>" + msg.getString("Clusters.Cluster_size") + ":</td>"
-			+ "<td><input type=\"text\" readonly name=\"size\" size=\"5\"></td>");
-		f.println("<td rowspan=\"3\">" + msg.getString("Clusters.Themewords")
-			+ ":</td><td rowspan=\"3\"><textarea cols=\"80\" rows=\"3\" readonly "
-			+ "name=\"theme\"></textarea></td></tr>");
-		f.println("<tr><td>" + msg.getString("Clusters.Threshold")
-			+ ":</td><td><input type=\"text\" readonly name=\"thresh\" "
-			+ "size=\"6\"></td></tr>");
-		f.println("<tr><td>" + msg.getString("Clusters.Documents")
-			+ ":</td><td><input type=\"text\" readonly name=\"docs\" "
-			+ "size=\"30\"></td></tr>");
-		f.println("</table>\n</form>");
-		
-		f.println(paintDendrogram(new File(root, "dendro.gif"), clustering));
-		f.println("<P><IMG SRC=\"dendro.gif\" ALT=\""
-			+ msg.getString("Clusters.Dendrogram_picture")
-			+ "\" USEMAP=\"#Dendrogram\"></P>");
-		f.println("</BODY>\n</HTML>");
-		f.close();
-		return f.bytesWritten();
+		String dendrogram = paintDendrogram(new File(root, "dendro.gif"), clustering);
+		return this.program.report.makeDendrograms(root, dendrogram);
 	}
 	
 	private String trimStringToLength(String text, int l) {

@@ -32,13 +32,14 @@ public class Report implements TokenConstants {
 	private File root;
 	private int[] dist;
 	private Options options;
-	SortedVector<AllMatches> avgmatches;
-	SortedVector<AllMatches> maxmatches;
-	SortedVector<AllMatches> minmatches;
-	SortedVector<AllMatches> bcmatches;
 
-	Map<AllMatches, Integer> matchesIndexMap = new HashMap<AllMatches, Integer>();
-	int curMatchIndex = 0;
+	private SortedVector<AllMatches> avgmatches;
+	private SortedVector<AllMatches> maxmatches;
+	private SortedVector<AllMatches> minmatches;
+	private SortedVector<AllMatches> bcmatches;
+
+	private Map<AllMatches, Integer> matchesIndexMap = new HashMap<AllMatches, Integer>();
+	private int curMatchIndex = 0;
 
 	// how much did we save?
 	private Language language;
@@ -119,7 +120,7 @@ public class Report implements TokenConstants {
 	}
 
 	// open file
-	public HTMLFile openHTMLFile(File root, String name) throws ExitException {
+	private HTMLFile openHTMLFile(File root, String name) throws ExitException {
 		if (!root.exists())
 			if (!root.mkdirs()) {
 				throw new jplag.ExitException("Cannot create directory!");
@@ -141,14 +142,14 @@ public class Report implements TokenConstants {
 		return res;
 	}
 
-	public void writeHTMLHeader(HTMLFile file, String title) {
+	private void writeHTMLHeader(HTMLFile file, String title) {
 		file.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
 		file.println("<HTML><HEAD><TITLE>" + title + "</TITLE>");
 		file.println("<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
 		file.println("</HEAD>");
 	}
 
-	public void writeHTMLHeaderWithScript(HTMLFile file, String title) {
+	private void writeHTMLHeaderWithScript(HTMLFile file, String title) {
 		file.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
 		file.println("<HTML>\n<HEAD>\n <TITLE>" + title + "</TITLE>");
 		file.println("<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
@@ -193,6 +194,39 @@ public class Report implements TokenConstants {
 			return curMatchIndex - 1;
 		} else
 			return ((Integer) obj).intValue();
+	}
+
+	public int makeDendrograms(File root, String dendrogram) throws ExitException {
+		HTMLFile f = this.openHTMLFile(root, "dendro.html");
+		f.println("<!DOCTYPE HTML PUBLIC \"-//DTD HTML 3.2//EN\">");
+		f.println("<HTML>\n<HEAD>\n<TITLE>"
+				+ msg.getString("Clusters.Dendrogram") + "</TITLE>\n"
+				+ "<script language=\"JavaScript\" type=\"text/javascript\" "
+				+ "src=\"fields.js\">\n</script>\n</HEAD>\n<BODY>");
+		f.println("<H1>" + msg.getString("Clusters.Dendrogram") + "</H1>");
+
+		f.println("<form name=\"data\" action=\"\">");
+		f.println("<table border=\"0\">");
+		f.println("<tr><td>" + msg.getString("Clusters.Cluster_size") + ":</td>"
+				+ "<td><input type=\"text\" readonly name=\"size\" size=\"5\"></td>");
+		f.println("<td rowspan=\"3\">" + msg.getString("Clusters.Themewords")
+				+ ":</td><td rowspan=\"3\"><textarea cols=\"80\" rows=\"3\" readonly "
+				+ "name=\"theme\"></textarea></td></tr>");
+		f.println("<tr><td>" + msg.getString("Clusters.Threshold")
+				+ ":</td><td><input type=\"text\" readonly name=\"thresh\" "
+				+ "size=\"6\"></td></tr>");
+		f.println("<tr><td>" + msg.getString("Clusters.Documents")
+				+ ":</td><td><input type=\"text\" readonly name=\"docs\" "
+				+ "size=\"30\"></td></tr>");
+		f.println("</table>\n</form>");
+
+		f.println(dendrogram);
+		f.println("<P><IMG SRC=\"dendro.gif\" ALT=\""
+				+ msg.getString("Clusters.Dendrogram_picture")
+				+ "\" USEMAP=\"#Dendrogram\"></P>");
+		f.println("</BODY>\n</HTML>");
+		f.close();
+		return f.bytesWritten();
 	}
 
 	abstract class MatchesHelper {
@@ -420,7 +454,7 @@ public class Report implements TokenConstants {
 		return size + f.bytesWritten();
 	}
 
-	public void writeIndexBegin(HTMLFile f, String title) {
+	private void writeIndexBegin(HTMLFile f, String title) {
 		writeHTMLHeader(f, title);
 		f.println("<BODY BGCOLOR=#ffffff LINK=#000088 VLINK=#000000 TEXT=#000000>");
 		f.println("<TABLE ALIGN=center CELLPADDING=2 CELLSPACING=1>");
@@ -509,7 +543,7 @@ public class Report implements TokenConstants {
 		f.println("</TABLE>\n<HR>");
 	}
 
-	public void writeIndexEnd(HTMLFile f) {
+	private void writeIndexEnd(HTMLFile f) {
 		f.println("<HR>\n<P ALIGN=right><FONT SIZE=\"1\" FACE=\"helvetica\">" + Program.name + "</FONT></P>");
 		f.println("</BODY>\n</HTML>");
 	}
@@ -605,7 +639,7 @@ public class Report implements TokenConstants {
 	 * Two colors, represented by Rl,Gl,Bl and Rh,Gh,Bh respectively are mixed
 	 * according to the percentage "percent"
 	 */
-	public final String color(float percent, int Rl, int Rh, int Gl, int Gh, int Bl, int Bh) {
+	private final String color(float percent, int Rl, int Rh, int Gl, int Gh, int Bl, int Bh) {
 		int farbeR = (int) (Rl + (Rh - Rl) * percent / 100);
 		int farbeG = (int) (Gl + (Gh - Gl) * percent / 100);
 		int farbeB = (int) (Bl + (Bh - Bl) * percent / 100);
@@ -637,7 +671,7 @@ public class Report implements TokenConstants {
 		}
 	}
 
-	public int writeMatch(File root, int i, AllMatches match) throws jplag.ExitException {
+	private int writeMatch(File root, int i, AllMatches match) throws jplag.ExitException {
 		this.root = root;
 		int bytes = 0;
 		// match???.html
@@ -1085,7 +1119,7 @@ public class Report implements TokenConstants {
 	 */
 	private String[] fileList = { "back.gif", "forward.gif", "help-en.html", "help-sim-en.html", "logo.gif", "fields.js" };
 
-	public void copyFixedFiles(File root) {
+	private void copyFixedFiles(File root) {
 		fileList[2] = "help-" + program.getCountryTag() + ".html";
 		fileList[3] = "help-sim-" + program.getCountryTag() + ".html";
 		for (int i = fileList.length - 1; i >= 0; i--) {

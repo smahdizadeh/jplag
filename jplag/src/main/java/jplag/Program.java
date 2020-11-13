@@ -1281,6 +1281,8 @@ public class Program implements ProgramI {
      */
     private void specialCompare() throws jplag.ExitException {
 
+        // TODO SH: minimize calls to Report class
+
         int size = submissions.size();
         int matchIndex = 0;
 

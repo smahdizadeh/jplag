@@ -30,12 +30,13 @@ public enum LanguageLiteral { // TODO TS: better name?
     private String languageClass;
 
     private LanguageLiteral(String abbreviation, String languageClass) {
-        this.abbreviation = abbreviation; // TODO TS: This is a relic of the previous implementation and just the short name from {@link Language#getShortName()}.
+        this.abbreviation = abbreviation;
         this.languageClass = languageClass;
     }
 
     /**
-     * Returns the abbreviation of the language, as used with the language parameter in the CLI. This matches {@link Language#getShortName()}.
+     * Returns the abbreviation of the language, as used with the language parameter in the CLI. This matches
+     * {@link Language#getShortName()}.
      * @return the abbreviation such as <code>"java19"</code> or <code>"c/c++"</code>.
      */
     public String getAbbreviation() {
@@ -46,7 +47,7 @@ public enum LanguageLiteral { // TODO TS: better name?
      * Returns the fully qualified name of the language class in the correlating language frontend
      * @return the language class name, such as <code>"jplag.java19.Language"</code> or <code>"jplag.cpp.Language"</code>.
      */
-    public String getClassName() { // TODO TS: maybe rename to getClassName()
+    public String getClassName() {
         return languageClass;
     }
 

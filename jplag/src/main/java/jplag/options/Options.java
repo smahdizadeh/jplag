@@ -5,16 +5,17 @@
  */
 package jplag.options;
 
-import jplag.ExitException;
-import jplag.Language;
-import jplag.Program;
-import jplag.clustering.SimilarityMatrix;
-import jplag.filter.Filter;
-
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+
+import jplag.ExitException;
+import jplag.Language;
+import jplag.Program;
+import jplag.ProgramI;
+import jplag.clustering.SimilarityMatrix;
+import jplag.filter.Filter;
 
 /**
  * @Author Emeric Kwemou 30.01.2005
@@ -108,7 +109,7 @@ public abstract class Options {
 
     public SimilarityMatrix similarity = null;
 
-    public jplag.Language language;
+    private Language language;
 
     // compare list of files options
     public boolean fileListMode = false;
@@ -140,6 +141,18 @@ public abstract class Options {
         return forceStop;
     }
 
+    public Language getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(Language language) {
+        this.language = language;
+        if (!min_token_match_set)
+            this.min_token_match = this.getLanguage().min_token_match();
+        if (!suffixes_set)
+            this.suffixes = this.getLanguage().suffixes();
+    }
+
     public int getProgress() {
         return int_progress;
     }
@@ -157,8 +170,6 @@ public abstract class Options {
     public void setState(int state) {
         this.state = state;
     }
-
-    public abstract void initializeSecondStep(Program program) throws jplag.ExitException;
 
     // TODO control how the exclusion file is handled by the Program
 
@@ -184,12 +195,21 @@ public abstract class Options {
                 + " -l <language>   (Language) Supported Languages:\n                 ");
         System.out.println(LanguageLiteral.availableLanguages());
     }
+    
+    public static void main(String[] args) {
+        try {
+            printAllLanguages();
+        } catch (ExitException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
-    // TODO TS: This is called by hidden option, but deeply broken since Language classes don't have an empty constructor.
+    // TODO TS: This is called by hidden option, but was deeply broken. Now it is fixed but I have no clue why this is needed
     protected static void printAllLanguages() throws jplag.ExitException {
         for (LanguageLiteral language : LanguageLiteral.values()) {
-            try {
-                Language langClass = (Language) Class.forName(language.getClassName()).getConstructor().newInstance();
+            try {   
+                Language langClass = (Language) Class.forName(language.getClassName()).getConstructor(ProgramI.class).newInstance(new Program());
                 System.out.println(language.getAbbreviation());
                 String suffixes[] = langClass.suffixes();
                 for (int j = 0; j < suffixes.length; j++)
@@ -234,9 +254,9 @@ public abstract class Options {
     }
 
     /**
-     * This method checks whether the basecode directory value is valid
+     * This method checks whether the base code directory value is valid
      */
-    protected void checkBasecodeOption() throws jplag.ExitException {
+    public void checkBasecodeOption() throws jplag.ExitException {
         if (useBasecode) {
             if (basecode == null || basecode.equals("")) {
                 throw new ExitException("Basecode option used but none " + "specified!", ExitException.BAD_PARAMETER);
@@ -257,4 +277,5 @@ public abstract class Options {
             System.out.println("Basecode directory \"" + fullPath + "\" will be used");
         }
     }
+
 }

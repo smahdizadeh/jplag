@@ -8,6 +8,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -23,6 +25,7 @@ import java.util.Vector;
 import jplag.clustering.Cluster;
 import jplag.clustering.Clusters;
 import jplag.clustering.SimilarityMatrix;
+import jplag.options.LanguageLiteral;
 import jplag.options.Options;
 import jplag.options.util.Messages;
 import jplagUtils.PropertiesLoader;
@@ -103,27 +106,9 @@ public class Program implements ProgramI {
 
     private FileWriter writer = null;
 
-    public Program(Options options) throws jplag.ExitException {
-        this.options = options;
-        this.options.initializeSecondStep(this); // TODO TS: I don't like that this subroutine in options is called, options should be a pure data object
-        if (this.options.language == null)
-            throw new ExitException("Language not initialized!", ExitException.BAD_LANGUAGE_ERROR);
-
-        msg = new Messages(this.options.getCountryTag());
-
-        if (this.options.getCountryTag().equals("de")) {
-            dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-            dateTimeFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss 'GMT'");
-        } else {
-            dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss 'GMT'");
-        }
-        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-        dateTimeFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-
-        report = new Report(this, get_language());
+    public Program() throws jplag.ExitException {
     }
-
+    
     /**
      * All submission with no errors are counted. (unsure if this is still
      * necessary.)
@@ -801,7 +786,7 @@ public class Program implements ProgramI {
     }
 
     public Language get_language() {
-        return this.options.language;
+        return this.options.getLanguage();
     }
 
     public int get_min_token_match() {
@@ -1122,8 +1107,9 @@ public class Program implements ProgramI {
     /**
      * **************************
      */
-    public void run() throws jplag.ExitException {
-        if (options.output_file != null) {
+    public void run(Options options) throws jplag.ExitException {
+        loadAndVerifyOptions(options);
+        if (options.output_file != null) { // TODO TS: This stuff could be part of loadAndVerifyOptions()
             try {
                 writer = new FileWriter(new File(options.output_file));
                 writer.write(name_long + "\n");
@@ -1134,7 +1120,7 @@ public class Program implements ProgramI {
             }
         } else
             print(null, name_long + "\n\n");
-        print(null, "Language: " + options.language.name() + "\n\n");
+        print(null, "Language: " + options.getLanguage().name() + "\n\n");
         if (options.original_dir == null)
             print(null, "Root-dir: " + options.root_dir + "\n"); // server
         // this file contains all files names which are excluded
@@ -1241,6 +1227,50 @@ public class Program implements ProgramI {
             fw.close();
         } catch (IOException ex) {
             System.out.println("Unable to create result.xml");
+        }
+    }
+
+    private void loadAndVerifyOptions(Options options) throws jplag.ExitException { // move init second step in here?
+        this.options = options;
+        ensureLanguageIsLoaded();
+        if (this.options.getLanguage() == null)
+            throw new ExitException("Language not initialized!", ExitException.BAD_LANGUAGE_ERROR);
+    
+        msg = new Messages(this.options.getCountryTag());
+    
+        if (this.options.getCountryTag().equals("de")) {
+            dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+            dateTimeFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss 'GMT'");
+        } else {
+            dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss 'GMT'");
+        }
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+        dateTimeFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+    
+        report = new Report(this, get_language());
+    }
+
+    /**
+     * Loads the language from the language name if not set. This is the case for command line options. This was previously part of the options (second step)
+     * @throws jplag.ExitException if there is no class to be found for the language literal set in the options.
+     */
+    private void ensureLanguageIsLoaded() throws jplag.ExitException {
+        if (options.getLanguage() == null) {
+            for (LanguageLiteral language : LanguageLiteral.values())
+                if (options.languageName.equals(language.getAbbreviation())) {
+                    try {
+                        Constructor<?> languageConstructor = Class.forName(language.getClassName()).getConstructor(ProgramI.class);
+                        options.setLanguage((Language) languageConstructor.newInstance(this));
+                    } catch (NoSuchMethodException | ClassNotFoundException | InstantiationException | IllegalAccessException
+                            | InvocationTargetException exception) {
+                        exception.printStackTrace();
+                        throw new jplag.ExitException(
+                                "Illegal value: Language instantiation failed: Unknown language \"" + options.languageName + "\"",
+                                +ExitException.BAD_LANGUAGE_ERROR);
+                    }
+                }
+            options.checkBasecodeOption();
         }
     }
 

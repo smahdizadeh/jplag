@@ -2,24 +2,23 @@ package jplag.options;
 
 import jplag.ExitException;
 import jplag.Language;
-import jplag.Program;
 
 /**
  * Options class for programmatic use of JPlag, for example when integrating JPlag into third party applications. This
  * class is not meant for CLI use.
  * @author Timur Saglam
  */
-public class ProgrammaticOptions extends Options { // TODO TS: Add param checks for all the constructors, especially directory checks and percentage checks
+public class ProgrammaticOptions extends Options { // TODO TS: Add param checks for all the constructors, especially directory and percentage checks
 
     /**
      * Creates a options configuration.
      * @param language is the language of the files to check. For supported languages see {@link LanguageLiteral}.
      */
-    ProgrammaticOptions(Language language) {
+    public ProgrammaticOptions(Language language) {
         if (language == null) {
             throw new IllegalArgumentException("Language should not be null!");
         }
-        this.language = language;
+        setLanguage(language);
         languageName = language.getShortName();
     }
 
@@ -28,7 +27,7 @@ public class ProgrammaticOptions extends Options { // TODO TS: Add param checks 
      * @param language is the language of the files to check. For supported languages see {@link LanguageLiteral}.
      * @param sourceDirectory is the source directory to look in for programs.
      */
-    ProgrammaticOptions(Language language, String sourceDirectory) {
+    public ProgrammaticOptions(Language language, String sourceDirectory) {
         this(language);
         checkDirectory(sourceDirectory, "source directory");
         sub_dir = sourceDirectory;
@@ -40,12 +39,14 @@ public class ProgrammaticOptions extends Options { // TODO TS: Add param checks 
      * @param language is the language of the files to check. For supported languages see {@link LanguageLiteral}.
      * @param sourceDirectory is the source directory to look in for programs.
      * @param baseCodeFolder is the directory which contains the base code (common framework given to the students)
+     * @throws ExitException throws an exception if the base code directory value is not valid.
      */
-    ProgrammaticOptions(Language language, String sourceDirectory, String baseCodeDirectory) {
+    public ProgrammaticOptions(Language language, String sourceDirectory, String baseCodeDirectory) throws ExitException {
         this(language, sourceDirectory);
         checkDirectory(baseCodeDirectory, "base code directory");
         basecode = baseCodeDirectory;
         useBasecode = true;
+        checkBasecodeOption();
     }
 
     /**
@@ -54,24 +55,13 @@ public class ProgrammaticOptions extends Options { // TODO TS: Add param checks 
      * @param sourceFolder is the source directory to look in for programs.
      * @param baseCodeFolder is the directory which contains the base code (common framework given to the students)
      * @param similarity is the similarity required to for two programs to be saved as match.
+     * @throws ExitException throws an exception if the base code directory value is not valid.
      */
-    ProgrammaticOptions(Language language, String sourceDirectory, String baseCodeDirectory, int similarity) { // TODO constructor for -m without %
+    public ProgrammaticOptions(Language language, String sourceDirectory, String baseCodeDirectory, int similarity) throws ExitException {
         this(language, sourceDirectory, baseCodeDirectory);
         store_matches = similarity;
         store_percent = true;
-    }
-
-    @Override
-    public void initializeSecondStep(Program program) throws ExitException {
-        // defaults TODO TS: could be in super class? Or maybe remove the second step mechanic completely
-        if (!min_token_match_set) {
-            this.min_token_match = this.language.min_token_match();
-        }
-        if (!suffixes_set) {
-            this.suffixes = this.language.suffixes();
-        }
-        checkBasecodeOption();
-    }
+    } // TODO constructor for -m without %
 
     private void checkDirectory(String directory, String directoryName) {
         if (directory == null || directory.length() == 0) {

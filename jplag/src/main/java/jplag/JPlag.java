@@ -8,12 +8,12 @@ public class JPlag {
             CommandLineOptions.usage();
         else {
             try {
+                Program program = new Program();
                 CommandLineOptions options = new CommandLineOptions(args);
-                Program program = new Program(options);
                 System.out.println("initialize ok");
-                program.run();
-            } catch (ExitException ex) {
-                System.out.println("Error: " + ex.getReport());
+                program.run(options);
+            } catch (ExitException exception) {
+                System.out.println("Error: " + exception.getReport());
                 System.exit(1);
             }
         }

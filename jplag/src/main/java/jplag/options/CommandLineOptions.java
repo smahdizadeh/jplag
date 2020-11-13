@@ -3,15 +3,12 @@
  */
 package jplag.options;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
 import jplag.ExitException;
 import jplag.Language;
-import jplag.Program;
 
 public class CommandLineOptions extends Options {
     private String[] args;
@@ -23,7 +20,12 @@ public class CommandLineOptions extends Options {
         return args;
     }
 
-    // TODO TS: cmdInString is not used at all, 
+    @Override
+    public void setLanguage(Language language) {
+        super.setLanguage(language);
+        System.out.println("Language accepted: " + getLanguage().name() + "\nCommand line: " + commandLine);
+    }
+
     public CommandLineOptions(String[] args) throws jplag.ExitException {
         this.args = args;
         initialize(args);
@@ -85,9 +87,9 @@ public class CommandLineOptions extends Options {
                     this.verbose_details = true;
                     break;
                 case 's': // hidden Option
-                    this.language = new jplag.javax.Language(null);// WARNING!!!!!BOMB
-                    this.min_token_match = this.language.min_token_match();
-                    this.suffixes = this.language.suffixes();
+                    setLanguage(new jplag.javax.Language(null));// WARNING!!!!!BOMB
+                    this.min_token_match = this.getLanguage().min_token_match();
+                    this.suffixes = this.getLanguage().suffixes();
                     this.verbose_quiet = true;
                     this.exp = true;
                     break;
@@ -312,27 +314,4 @@ public class CommandLineOptions extends Options {
 
         return i;
     }
-
-    public void initializeSecondStep(Program program) throws jplag.ExitException {
-        for (LanguageLiteral language : LanguageLiteral.values())
-            if (languageName.equals(language.getAbbreviation())) {
-                try {
-                    Constructor<?> languageConstructor = Class.forName(language.getClassName()).getConstructor(Program.class);
-                    this.language = (Language) languageConstructor.newInstance(program);
-                    System.out.println("Language accepted: " + this.language.name() + "\nCommand line: " + this.commandLine);
-                } catch (NoSuchMethodException | ClassNotFoundException | InstantiationException | IllegalAccessException
-                        | InvocationTargetException exception) {
-                    exception.printStackTrace();
-                    throw new jplag.ExitException("Illegal value: Language instantiation failed: Unknown language \"" + languageName + "\"",
-                            +ExitException.BAD_LANGUAGE_ERROR);
-                }
-            }
-        // defaults
-        if (!min_token_match_set)
-            this.min_token_match = this.language.min_token_match();
-        if (!suffixes_set)
-            this.suffixes = this.language.suffixes();
-        checkBasecodeOption();
-    }
-
 }

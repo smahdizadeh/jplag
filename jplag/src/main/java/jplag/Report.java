@@ -49,6 +49,51 @@ public class Report implements TokenConstants {
 		this.msg = program.msg;
 	}
 
+	// Methods starting here are used in order to remove output-related code from Program
+
+	private HTMLFile specialCompareOutputFile = null;
+
+	public void beginSpecialCompareOutput() throws ExitException {
+		File root = new File(options.result_dir);
+		HTMLFile f = this.openHTMLFile(root, "index.html");
+		this.copyFixedFiles(root);
+		this.writeIndexBegin(f, "Special Search Results"); // start HTML
+		f.println("<P><A NAME=\"matches\"><H4>Matches:</H4><P>");
+		this.specialCompareOutputFile = f;
+	}
+
+	public void beginSpecialCompareMatches() {
+		specialCompareOutputFile.println("<TABLE CELLPADDING=3 CELLSPACING=2>");
+	}
+
+	public void endSpecialCompareMatches() {
+		specialCompareOutputFile.println("</TR>");
+	}
+
+	public void endSpecialCompareOutput() {
+		specialCompareOutputFile.println("</TABLE><P>\n");
+		specialCompareOutputFile.println("<!---->");
+		this.writeIndexEnd(specialCompareOutputFile);
+		specialCompareOutputFile.close();
+	}
+
+	public void specialComparePrintMatch(float percentage, String name) {
+		specialCompareOutputFile.println("<TR><TD BGCOLOR=" + this.color(percentage, 128, 192, 128, 192, 255, 255) + ">" + name
+				+ "<TD WIDTH=\"10\">-&gt;");
+	}
+
+	public void specialComparePrintOther(float percentage, float roundedPercentage, int matchIndex, String subName) {
+		specialCompareOutputFile.println(" <TD BGCOLOR=" + this.color(percentage, 128, 192, 128, 192, 255, 255)
+				+ " ALIGN=center><A HREF=\"match" + matchIndex + ".html\">" + subName + "</A><BR><FONT COLOR=\""
+				+ this.color(percentage, 0, 255, 0, 0, 0, 0) + "\"><B>(" + roundedPercentage + "%)</B></FONT>");
+	}
+
+	public void specialCompareWriteMatch(int matchIndex, AllMatches match) throws ExitException {
+		this.writeMatch(root, matchIndex, match);
+	}
+
+	// Original methods
+
 	public void write(File f, int[] dist, SortedVector<AllMatches> avgmatches, SortedVector<AllMatches> maxmatches,
 			SortedVector<AllMatches> minmatches, Cluster clustering, Options options) throws jplag.ExitException {
 		root = f;

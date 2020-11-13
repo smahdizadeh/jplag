@@ -1280,12 +1280,6 @@ public class Program implements ProgramI {
      * Now the special comparison:
      */
     private void specialCompare() throws jplag.ExitException {
-        File root = new File(options.result_dir);
-        HTMLFile f = this.report.openHTMLFile(root, "index.html");
-        this.report.copyFixedFiles(root);
-
-        this.report.writeIndexBegin(f, "Special Search Results"); // start HTML
-        f.println("<P><A NAME=\"matches\"><H4>Matches:</H4><P>");
 
         int size = submissions.size();
         int matchIndex = 0;
@@ -1300,6 +1294,9 @@ public class Program implements ProgramI {
         AllMatches match;
         Submission s1, s2;
         long msec = System.currentTimeMillis();
+
+        report.beginSpecialCompareOutput();
+
         for (i = 0; i < (size - 1); i++) {
             // Result vector
             SortedVector<AllMatches> matches = new SortedVector<AllMatches>(new AllMatches.AvgComparator());
@@ -1336,28 +1333,26 @@ public class Program implements ProgramI {
             }
 
             // now output matches:
-            f.println("<TABLE CELLPADDING=3 CELLSPACING=2>");
+
+            report.beginSpecialCompareMatches();
             boolean once = true;
             for (Iterator<AllMatches> iter = matches.iterator(); iter.hasNext(); ) {
                 match = iter.next();
                 if (once) {
-                    f.println("<TR><TD BGCOLOR=" + this.report.color(match.percent(), 128, 192, 128, 192, 255, 255) + ">" + s1.name
-                            + "<TD WIDTH=\"10\">-&gt;");
+                    report.specialComparePrintMatch(match.percent(), s1.name);
                     once = false;
                 }
 
                 int other = (match.subName(0).equals(s1.name) ? 1 : 0);
-                f.println(" <TD BGCOLOR=" + this.report.color(match.percent(), 128, 192, 128, 192, 255, 255)
-                        + " ALIGN=center><A HREF=\"match" + matchIndex + ".html\">" + match.subName(other) + "</A><BR><FONT COLOR=\""
-                        + this.report.color(match.percent(), 0, 255, 0, 0, 0, 0) + "\"><B>(" + match.roundedPercent() + "%)</B></FONT>");
-                this.report.writeMatch(root, matchIndex++, match);
+                report.specialComparePrintOther(match.percent(), match.roundedPercent(), matchIndex, match.subName(other));
+                report.specialCompareWriteMatch(matchIndex, match);
+                matchIndex++;
             }
-            f.println("</TR>");
+            report.endSpecialCompareMatches();
         }
-        f.println("</TABLE><P>\n");
-        f.println("<!---->");
-        this.report.writeIndexEnd(f);
-        f.close();
+        report.endSpecialCompareOutput();
+
+
 
         options.setProgress(100);
         long time = System.currentTimeMillis() - msec;

@@ -22,22 +22,22 @@ import jplag.filter.Filter;
 public abstract class Options {
     protected String langs = "jplag.options.util.messages_en";
 
-    protected boolean suffixes_set = false;
+    protected boolean suffixes_set;
 
-    protected boolean min_token_match_set = false;
+    protected boolean min_token_match_set;
 
     public static final int MIN_CLUSTER = 1;
     public static final int MAX_CLUSTER = 2;
     public static final int AVR_CLUSTER = 3;
 
     // Program OPTIONS
-    public boolean verbose_quiet = false;
+    public boolean verbose_quiet;
 
-    public boolean verbose_long = false;
+    public boolean verbose_long;
 
-    public boolean verbose_parser = false;
+    public boolean verbose_parser;
 
-    public boolean verbose_details = false;
+    public boolean verbose_details;
 
     public String sub_dir = null; // source folders (-s argument)
 
@@ -53,16 +53,18 @@ public abstract class Options {
 
     public String include_file = null; // (-i argument)
 
-    public boolean read_subdirs = false; // if sub directories should be read (-S argument)
+    public boolean read_subdirs; // if sub directories should be read (-S argument)
 
     public int store_matches = 30;
 
-    public boolean store_percent = false; // is the number "store_matches"
+    public boolean store_percent; // is the number "store_matches"
 
     // a percentage?
     public static final int MAX_RESULT_PAIRS = 1000;
 
     public String result_dir = "result"; // where the results are exported to as a web page (-r)
+    
+    public boolean generateWebPage;
 
     public String helper[] = new String[1];
 
@@ -75,9 +77,9 @@ public abstract class Options {
 
     public String[] suffixes; // TODO TS: This should probably be a list
 
-    public boolean exp = false; // EXPERIMENT
+    public boolean exp; // EXPERIMENT
 
-    public boolean diff_report = false; // special "diff" report
+    public boolean diff_report; // special "diff" report
 
     public Filter filter = null;
 
@@ -86,13 +88,13 @@ public abstract class Options {
     public String basecode = ""; // common framework given to the students (-bc argument)
 
     // "Ronald Kostoff" specials
-    public boolean externalSearch = false;
+    public boolean externalSearch;
 
-    public boolean skipParse = false;
+    public boolean skipParse;
 
-    public boolean clustering = false;
+    public boolean clustering;
 
-    public boolean useBasecode = false;
+    public boolean useBasecode;
 
     public String languageName = null;
 
@@ -111,12 +113,12 @@ public abstract class Options {
     private Language language;
 
     // compare list of files options
-    public boolean fileListMode = false;
+    public boolean fileListMode;
 
     public List<String> fileList = new ArrayList<String>();
 
     // "FINAL" OPTIONS
-    public boolean debugParser = false;
+    public boolean debugParser;
 
     // END OPTIONS
 
@@ -130,7 +132,7 @@ public abstract class Options {
 
     private int state = 50;
 
-    private boolean forceStop = false;
+    private boolean forceStop;
 
     public void forceProgramToStop() {
         forceStop = true;

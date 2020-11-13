@@ -27,6 +27,7 @@ public class CommandLineOptions extends Options {
     }
 
     public CommandLineOptions(String[] args) throws jplag.ExitException {
+        generateWebPage = true;
         this.args = args;
         initialize(args);
         if (languageName == null) {
@@ -57,7 +58,7 @@ public class CommandLineOptions extends Options {
     }
 
     private boolean scanOption(String arg) throws jplag.ExitException {
-        if (arg.equals("-s")) { // TODO TS: something is weird/broken with -S, not sure ow it affects -s though
+        if (arg.equals("-s")) { // TODO TS: something is weird/broken with -S, not sure how it affects -s though
             this.read_subdirs = true;
         } else if (arg.equals("-external")) { // hidden option!
             System.out.println("External search activated!");

@@ -191,6 +191,11 @@
         </dependency>
         <dependency>
             <groupId>edu.kit.ipd.jplag</groupId>
+            <artifactId>java-1.2</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>edu.kit.ipd.jplag</groupId>
             <artifactId>utils</artifactId>
         </dependency>
         <dependency>

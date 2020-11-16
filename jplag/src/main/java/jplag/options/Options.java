@@ -122,6 +122,7 @@ public abstract class Options {
 
     // END OPTIONS
 
+    public static final int DEFAULT_STATE = 50;
     public static final int PARSING = 100;
     public static final int PARSING_WARNINGS = 101;
     public static final int COMPARING = 200;
@@ -130,7 +131,7 @@ public abstract class Options {
 
     private int int_progress = 0;
 
-    private int state = 50;
+    private int state = DEFAULT_STATE;
 
     private boolean forceStop;
 

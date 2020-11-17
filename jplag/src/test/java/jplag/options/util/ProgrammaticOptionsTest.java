@@ -1,6 +1,7 @@
 package jplag.options.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +22,7 @@ import jplag.options.ProgrammaticOptions;
 
 /**
  * Test class to ensure the programmatic options behave the same ways as the CLI options. Also checks whether the
- * programmatic options control the {@link Program} the same way.F
+ * programmatic options control the {@link Program} the same way.
  * @author Timur Saglam
  */
 public class ProgrammaticOptionsTest {
@@ -62,7 +63,7 @@ public class ProgrammaticOptionsTest {
             assertEquals(Options.DEFAULT_STATE, options.getState());
             // run and check results:
             program.run(options);
-            assertEquals(100, options.getProgress()); // TODO TS: Check programmatic results whem implemented
+            assertEquals(100, options.getProgress()); // TODO TS: Check programmatic results when implemented
             assertEquals(Options.GENERATING_RESULT_FILES, options.getState());
         } catch (ExitException exception) {
             fail("Fail: " + exception.getReport());

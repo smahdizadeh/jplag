@@ -267,6 +267,7 @@ public class Program implements ProgramI {
                 anz++;
 
                 System.out.println("Comparing " + s1.name + "-" + s2.name + ": " + match.percent());
+                System.out.println("#;" + match.percent() + ";" + match.percentMaxAB());
 
                 // histogram:
                 if (options.useBasecode) {
